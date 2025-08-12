@@ -1,0 +1,224 @@
+﻿@model List<AuthWebApp.Models.User>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - AuthWebApp</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background-color: transparent;
+            border-bottom: 2px solid #eee;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .table th {
+            border-top: none;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #fd5e53 0%, #fc9842 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 8px 20px;
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-shield-alt"></i> AuthWebApp
+            </a>
+            <div class="d-flex align-items-center">
+                <span class="text-white me-3">
+                    <i class="fas fa-user-circle"></i> Bienvenido, @ViewBag.CurrentUser
+                </span>
+                <form asp-action="Logout" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-logout">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Welcome Section -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card welcome-card">
+                    <div class="card-body p-4">
+                        <h3 class="mb-2">
+                            <i class="fas fa-home"></i> Dashboard Principal
+                        </h3>
+                        <p class="mb-0">
+                            ¡Bienvenido al sistema de autenticación! Has iniciado sesión correctamente.
+                        </p>
+                        <small class="opacity-75">
+                            Fecha de acceso: @DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stats-card">
+                    <div class="card-body text-center p-4">
+                        <h2 class="mb-1">@Model.Count</h2>
+                        <p class="mb-0">
+                            <i class="fas fa-users"></i> Usuarios Activos
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-users"></i> Lista de Usuarios del Sistema
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (Model != null && Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Avatar</th>
+                                    <th>ID</th>
+                                    <th>Usuario</th>
+                                    <th>Email</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="user-avatar">
+                                                @user.Username.First().ToString().ToUpper()
+                                            </div>
+                                        </td>
+                                        <td><span class="badge bg-secondary">#@user.Id</span></td>
+                                        <td>
+                                            <strong>@user.Username</strong>
+                                            @if (user.Username == ViewBag.CurrentUser)
+                                            {
+                                                <span class="badge bg-primary ms-2">Tú</span>
+                                            }
+                                        </td>
+                                        <td>@user.Email</td>
+                                        <td>
+                                            @if (user.IsActive)
+                                            {
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check-circle"></i> Activo
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">
+                                                    <i class="fas fa-times-circle"></i> Inactivo
+                                                </span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No hay usuarios disponibles</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-lock fa-3x text-primary mb-3"></i>
+                        <h5>Autenticación Segura</h5>
+                        <p class="text-muted">Sistema de autenticación basado en cookies con validación de usuarios.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-cloud fa-3x text-success mb-3"></i>
+                        <h5>Desplegado en la Nube</h5>
+                        <p class="text-muted">Aplicación desplegada en GitHub Pages y Google Cloud Platform.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-code fa-3x text-info mb-3"></i>
+                        <h5>ASP.NET Core</h5>
+                        <p class="text-muted">Desarrollado con la última tecnología de Microsoft para aplicaciones web.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
